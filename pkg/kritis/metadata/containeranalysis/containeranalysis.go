@@ -17,6 +17,7 @@ limitations under the License.
 package containeranalysis
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -28,7 +29,6 @@ import (
 	"github.com/grafeas/kritis/pkg/kritis/metadata"
 	"github.com/grafeas/kritis/pkg/kritis/secrets"
 	"github.com/grafeas/kritis/pkg/kritis/util"
-	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/attestation"
 	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
