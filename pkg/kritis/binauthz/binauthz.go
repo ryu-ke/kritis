@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	binaryauthorization "google.golang.org/api/binaryauthorization/v1beta1"
+	binaryauthorization "google.golang.org/api/binaryauthorization/v1"
 )
 
 type Client interface {
