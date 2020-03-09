@@ -273,12 +273,12 @@ func (f *binauthzAttestorFetcher) GetAttestor(name string) (*Attestor, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to get an attestor: %s", name)
 	}
-	if a.UserOwnedDrydockNote == nil {
+	if a.UserOwnedGrafeasNote == nil {
 		return nil, errors.Wrapf(err, "attestor doesn't have UserOwnedDrydockNote: %s", name)
 	}
 
 	pubKeys := []*AttestorPublicKey{}
-	for _, pubKey := range a.UserOwnedDrydockNote.PublicKeys {
+	for _, pubKey := range a.UserOwnedGrafeasNote.PublicKeys {
 		pubKeys = append(pubKeys, &AttestorPublicKey{
 			ID:         pubKey.Id,
 			AsciiArmor: pubKey.AsciiArmoredPgpPublicKey,

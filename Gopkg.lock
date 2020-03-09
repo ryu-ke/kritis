@@ -479,10 +479,10 @@
   revision = "e2be0f7276f6ea2d8290dea1ffd89c98f6ac0b9e"
 
 [[projects]]
-  digest = "1:ff08897defde2fd75fcaf3c716437fe35396e98096e08ef8fcdbeed78ae29f50"
+  digest = "1:460df8b740f0dee9e001275f6e4d9ab1c325bd53a45071a5c14b8eb98d25e042"
   name = "google.golang.org/api"
   packages = [
-    "binaryauthorization/v1beta1",
+    "binaryauthorization/v1",
     "googleapi",
     "googleapi/transport",
     "internal",
@@ -886,7 +886,7 @@
     "golang.org/x/crypto/openpgp/packet",
     "golang.org/x/crypto/openpgp/s2k",
     "golang.org/x/net/context",
-    "google.golang.org/api/binaryauthorization/v1beta1",
+    "google.golang.org/api/binaryauthorization/v1",
     "google.golang.org/api/iterator",
     "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/attestation",
     "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas",

@@ -12,7 +12,7 @@
 //
 // Usage example:
 //
-//   import "google.golang.org/api/binaryauthorization/v1beta1"
+//   import "google.golang.org/api/binaryauthorization/v1"
 //   ...
 //   ctx := context.Background()
 //   binaryauthorizationService, err := binaryauthorization.NewService(ctx)
@@ -35,7 +35,7 @@
 //   binaryauthorizationService, err := binaryauthorization.NewService(ctx, option.WithTokenSource(config.TokenSource(ctx, token)))
 //
 // See https://godoc.org/google.golang.org/api/option/ for details on options.
-package binaryauthorization // import "google.golang.org/api/binaryauthorization/v1beta1"
+package binaryauthorization // import "google.golang.org/api/binaryauthorization/v1"
 
 import (
 	"bytes"
@@ -71,9 +71,9 @@ var _ = strings.Replace
 var _ = context.Canceled
 var _ = internaloption.WithDefaultEndpoint
 
-const apiId = "binaryauthorization:v1beta1"
+const apiId = "binaryauthorization:v1"
 const apiName = "binaryauthorization"
-const apiVersion = "v1beta1"
+const apiVersion = "v1"
 const basePath = "https://binaryauthorization.googleapis.com/"
 
 // OAuth2 scopes used by this API.
@@ -293,9 +293,10 @@ type Attestor struct {
 	// UpdateTime: Output only. Time when the attestor was last updated.
 	UpdateTime string `json:"updateTime,omitempty"`
 
-	// UserOwnedDrydockNote: A Drydock ATTESTATION_AUTHORITY Note, created
-	// by the user.
-	UserOwnedDrydockNote *UserOwnedDrydockNote `json:"userOwnedDrydockNote,omitempty"`
+	// UserOwnedGrafeasNote: This specifies how an attestation will be read,
+	// and how it will be used
+	// during policy enforcement.
+	UserOwnedGrafeasNote *UserOwnedGrafeasNote `json:"userOwnedGrafeasNote,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
 	// server.
@@ -1065,10 +1066,10 @@ func (s *TestIamPermissionsResponse) MarshalJSON() ([]byte, error) {
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
-// UserOwnedDrydockNote: An user owned drydock note references a
-// Drydock
-// ATTESTATION_AUTHORITY Note created by the user.
-type UserOwnedDrydockNote struct {
+// UserOwnedGrafeasNote: An user owned Grafeas note references a
+// Grafeas
+// Attestation.Authority Note created by the user.
+type UserOwnedGrafeasNote struct {
 	// DelegationServiceAccountEmail: Output only. This field will contain
 	// the service account email address
 	// that this Attestor will use as the principal when querying
@@ -1087,17 +1088,17 @@ type UserOwnedDrydockNote struct {
 	// future versions may use an email based on a different naming pattern.
 	DelegationServiceAccountEmail string `json:"delegationServiceAccountEmail,omitempty"`
 
-	// NoteReference: Required. The Drydock resource name of a
-	// ATTESTATION_AUTHORITY Note,
-	// created by the user, in the format: `projects/*/notes/*` (or the
-	// legacy
-	// `providers/*/notes/*`). This field may not be updated.
+	// NoteReference: Required. The Grafeas resource name of a
+	// Attestation.Authority Note,
+	// created by the user, in the format: `projects/*/notes/*`. This field
+	// may
+	// not be updated.
 	//
 	// An attestation by this attestor is stored as a
-	// Drydock
-	// ATTESTATION_AUTHORITY Occurrence that names a container image and
+	// Grafeas
+	// Attestation.Authority Occurrence that names a container image and
 	// that
-	// links to this Note. Drydock is an external dependency.
+	// links to this Note. Grafeas is an external dependency.
 	NoteReference string `json:"noteReference,omitempty"`
 
 	// PublicKeys: Optional. Public keys that verify attestations signed by
@@ -1132,8 +1133,8 @@ type UserOwnedDrydockNote struct {
 	NullFields []string `json:"-"`
 }
 
-func (s *UserOwnedDrydockNote) MarshalJSON() ([]byte, error) {
-	type NoMethod UserOwnedDrydockNote
+func (s *UserOwnedGrafeasNote) MarshalJSON() ([]byte, error) {
+	type NoMethod UserOwnedGrafeasNote
 	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
@@ -1212,7 +1213,7 @@ func (c *ProjectsGetPolicyCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+name}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+name}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -1264,7 +1265,7 @@ func (c *ProjectsGetPolicyCall) Do(opts ...googleapi.CallOption) (*Policy, error
 	return ret, nil
 	// {
 	//   "description": "A policy specifies the attestors that must attest to\na container image, before the project is allowed to deploy that\nimage. There is at most one policy per project. All image admission\nrequests are permitted if a project has no policy.\n\nGets the policy for this project. Returns a default\npolicy if the project does not have one.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/policy",
+	//   "flatPath": "v1/projects/{projectsId}/policy",
 	//   "httpMethod": "GET",
 	//   "id": "binaryauthorization.projects.getPolicy",
 	//   "parameterOrder": [
@@ -1279,7 +1280,7 @@ func (c *ProjectsGetPolicyCall) Do(opts ...googleapi.CallOption) (*Policy, error
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+name}",
+	//   "path": "v1/{+name}",
 	//   "response": {
 	//     "$ref": "Policy"
 	//   },
@@ -1357,7 +1358,7 @@ func (c *ProjectsUpdatePolicyCall) doRequest(alt string) (*http.Response, error)
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+name}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+name}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -1409,7 +1410,7 @@ func (c *ProjectsUpdatePolicyCall) Do(opts ...googleapi.CallOption) (*Policy, er
 	return ret, nil
 	// {
 	//   "description": "Creates or updates a project's policy, and returns a copy of the\nnew policy. A policy is always updated as a whole, to avoid race\nconditions with concurrent policy enforcement (or management!)\nrequests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT\nif the request is malformed.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/policy",
+	//   "flatPath": "v1/projects/{projectsId}/policy",
 	//   "httpMethod": "PUT",
 	//   "id": "binaryauthorization.projects.updatePolicy",
 	//   "parameterOrder": [
@@ -1424,7 +1425,7 @@ func (c *ProjectsUpdatePolicyCall) Do(opts ...googleapi.CallOption) (*Policy, er
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+name}",
+	//   "path": "v1/{+name}",
 	//   "request": {
 	//     "$ref": "Policy"
 	//   },
@@ -1509,7 +1510,7 @@ func (c *ProjectsAttestorsCreateCall) doRequest(alt string) (*http.Response, err
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+parent}/attestors")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+parent}/attestors")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -1561,7 +1562,7 @@ func (c *ProjectsAttestorsCreateCall) Do(opts ...googleapi.CallOption) (*Attesto
 	return ret, nil
 	// {
 	//   "description": "Creates an attestor, and returns a copy of the new\nattestor. Returns NOT_FOUND if the project does not exist,\nINVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the\nattestor already exists.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/attestors",
+	//   "flatPath": "v1/projects/{projectsId}/attestors",
 	//   "httpMethod": "POST",
 	//   "id": "binaryauthorization.projects.attestors.create",
 	//   "parameterOrder": [
@@ -1581,7 +1582,7 @@ func (c *ProjectsAttestorsCreateCall) Do(opts ...googleapi.CallOption) (*Attesto
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+parent}/attestors",
+	//   "path": "v1/{+parent}/attestors",
 	//   "request": {
 	//     "$ref": "Attestor"
 	//   },
@@ -1648,7 +1649,7 @@ func (c *ProjectsAttestorsDeleteCall) doRequest(alt string) (*http.Response, err
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+name}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+name}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -1700,7 +1701,7 @@ func (c *ProjectsAttestorsDeleteCall) Do(opts ...googleapi.CallOption) (*Empty, 
 	return ret, nil
 	// {
 	//   "description": "Deletes an attestor. Returns NOT_FOUND if the\nattestor does not exist.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}",
+	//   "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}",
 	//   "httpMethod": "DELETE",
 	//   "id": "binaryauthorization.projects.attestors.delete",
 	//   "parameterOrder": [
@@ -1715,7 +1716,7 @@ func (c *ProjectsAttestorsDeleteCall) Do(opts ...googleapi.CallOption) (*Empty, 
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+name}",
+	//   "path": "v1/{+name}",
 	//   "response": {
 	//     "$ref": "Empty"
 	//   },
@@ -1793,7 +1794,7 @@ func (c *ProjectsAttestorsGetCall) doRequest(alt string) (*http.Response, error)
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+name}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+name}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -1845,7 +1846,7 @@ func (c *ProjectsAttestorsGetCall) Do(opts ...googleapi.CallOption) (*Attestor, 
 	return ret, nil
 	// {
 	//   "description": "Gets an attestor.\nReturns NOT_FOUND if the attestor does not exist.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}",
+	//   "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}",
 	//   "httpMethod": "GET",
 	//   "id": "binaryauthorization.projects.attestors.get",
 	//   "parameterOrder": [
@@ -1860,7 +1861,7 @@ func (c *ProjectsAttestorsGetCall) Do(opts ...googleapi.CallOption) (*Attestor, 
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+name}",
+	//   "path": "v1/{+name}",
 	//   "response": {
 	//     "$ref": "Attestor"
 	//   },
@@ -1958,7 +1959,7 @@ func (c *ProjectsAttestorsGetIamPolicyCall) doRequest(alt string) (*http.Respons
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+resource}:getIamPolicy")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+resource}:getIamPolicy")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -2010,7 +2011,7 @@ func (c *ProjectsAttestorsGetIamPolicyCall) Do(opts ...googleapi.CallOption) (*I
 	return ret, nil
 	// {
 	//   "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}:getIamPolicy",
+	//   "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}:getIamPolicy",
 	//   "httpMethod": "GET",
 	//   "id": "binaryauthorization.projects.attestors.getIamPolicy",
 	//   "parameterOrder": [
@@ -2031,7 +2032,7 @@ func (c *ProjectsAttestorsGetIamPolicyCall) Do(opts ...googleapi.CallOption) (*I
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+resource}:getIamPolicy",
+	//   "path": "v1/{+resource}:getIamPolicy",
 	//   "response": {
 	//     "$ref": "IamPolicy"
 	//   },
@@ -2128,7 +2129,7 @@ func (c *ProjectsAttestorsListCall) doRequest(alt string) (*http.Response, error
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+parent}/attestors")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+parent}/attestors")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -2180,7 +2181,7 @@ func (c *ProjectsAttestorsListCall) Do(opts ...googleapi.CallOption) (*ListAttes
 	return ret, nil
 	// {
 	//   "description": "Lists attestors.\nReturns INVALID_ARGUMENT if the project does not exist.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/attestors",
+	//   "flatPath": "v1/projects/{projectsId}/attestors",
 	//   "httpMethod": "GET",
 	//   "id": "binaryauthorization.projects.attestors.list",
 	//   "parameterOrder": [
@@ -2206,7 +2207,7 @@ func (c *ProjectsAttestorsListCall) Do(opts ...googleapi.CallOption) (*ListAttes
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+parent}/attestors",
+	//   "path": "v1/{+parent}/attestors",
 	//   "response": {
 	//     "$ref": "ListAttestorsResponse"
 	//   },
@@ -2302,7 +2303,7 @@ func (c *ProjectsAttestorsSetIamPolicyCall) doRequest(alt string) (*http.Respons
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+resource}:setIamPolicy")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+resource}:setIamPolicy")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -2354,7 +2355,7 @@ func (c *ProjectsAttestorsSetIamPolicyCall) Do(opts ...googleapi.CallOption) (*I
 	return ret, nil
 	// {
 	//   "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED",
-	//   "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}:setIamPolicy",
+	//   "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}:setIamPolicy",
 	//   "httpMethod": "POST",
 	//   "id": "binaryauthorization.projects.attestors.setIamPolicy",
 	//   "parameterOrder": [
@@ -2369,7 +2370,7 @@ func (c *ProjectsAttestorsSetIamPolicyCall) Do(opts ...googleapi.CallOption) (*I
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+resource}:setIamPolicy",
+	//   "path": "v1/{+resource}:setIamPolicy",
 	//   "request": {
 	//     "$ref": "SetIamPolicyRequest"
 	//   },
@@ -2452,7 +2453,7 @@ func (c *ProjectsAttestorsTestIamPermissionsCall) doRequest(alt string) (*http.R
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+resource}:testIamPermissions")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+resource}:testIamPermissions")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -2504,7 +2505,7 @@ func (c *ProjectsAttestorsTestIamPermissionsCall) Do(opts ...googleapi.CallOptio
 	return ret, nil
 	// {
 	//   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}:testIamPermissions",
+	//   "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}:testIamPermissions",
 	//   "httpMethod": "POST",
 	//   "id": "binaryauthorization.projects.attestors.testIamPermissions",
 	//   "parameterOrder": [
@@ -2519,7 +2520,7 @@ func (c *ProjectsAttestorsTestIamPermissionsCall) Do(opts ...googleapi.CallOptio
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+resource}:testIamPermissions",
+	//   "path": "v1/{+resource}:testIamPermissions",
 	//   "request": {
 	//     "$ref": "TestIamPermissionsRequest"
 	//   },
@@ -2593,7 +2594,7 @@ func (c *ProjectsAttestorsUpdateCall) doRequest(alt string) (*http.Response, err
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+name}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+name}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -2645,7 +2646,7 @@ func (c *ProjectsAttestorsUpdateCall) Do(opts ...googleapi.CallOption) (*Attesto
 	return ret, nil
 	// {
 	//   "description": "Updates an attestor.\nReturns NOT_FOUND if the attestor does not exist.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}",
+	//   "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}",
 	//   "httpMethod": "PUT",
 	//   "id": "binaryauthorization.projects.attestors.update",
 	//   "parameterOrder": [
@@ -2660,7 +2661,7 @@ func (c *ProjectsAttestorsUpdateCall) Do(opts ...googleapi.CallOption) (*Attesto
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+name}",
+	//   "path": "v1/{+name}",
 	//   "request": {
 	//     "$ref": "Attestor"
 	//   },
@@ -2761,7 +2762,7 @@ func (c *ProjectsPolicyGetIamPolicyCall) doRequest(alt string) (*http.Response, 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+resource}:getIamPolicy")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+resource}:getIamPolicy")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -2813,7 +2814,7 @@ func (c *ProjectsPolicyGetIamPolicyCall) Do(opts ...googleapi.CallOption) (*IamP
 	return ret, nil
 	// {
 	//   "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/policy:getIamPolicy",
+	//   "flatPath": "v1/projects/{projectsId}/policy:getIamPolicy",
 	//   "httpMethod": "GET",
 	//   "id": "binaryauthorization.projects.policy.getIamPolicy",
 	//   "parameterOrder": [
@@ -2834,7 +2835,7 @@ func (c *ProjectsPolicyGetIamPolicyCall) Do(opts ...googleapi.CallOption) (*IamP
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+resource}:getIamPolicy",
+	//   "path": "v1/{+resource}:getIamPolicy",
 	//   "response": {
 	//     "$ref": "IamPolicy"
 	//   },
@@ -2909,7 +2910,7 @@ func (c *ProjectsPolicySetIamPolicyCall) doRequest(alt string) (*http.Response, 
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+resource}:setIamPolicy")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+resource}:setIamPolicy")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -2961,7 +2962,7 @@ func (c *ProjectsPolicySetIamPolicyCall) Do(opts ...googleapi.CallOption) (*IamP
 	return ret, nil
 	// {
 	//   "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED",
-	//   "flatPath": "v1beta1/projects/{projectsId}/policy:setIamPolicy",
+	//   "flatPath": "v1/projects/{projectsId}/policy:setIamPolicy",
 	//   "httpMethod": "POST",
 	//   "id": "binaryauthorization.projects.policy.setIamPolicy",
 	//   "parameterOrder": [
@@ -2976,7 +2977,7 @@ func (c *ProjectsPolicySetIamPolicyCall) Do(opts ...googleapi.CallOption) (*IamP
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+resource}:setIamPolicy",
+	//   "path": "v1/{+resource}:setIamPolicy",
 	//   "request": {
 	//     "$ref": "SetIamPolicyRequest"
 	//   },
@@ -3059,7 +3060,7 @@ func (c *ProjectsPolicyTestIamPermissionsCall) doRequest(alt string) (*http.Resp
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "v1beta1/{+resource}:testIamPermissions")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/{+resource}:testIamPermissions")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -3111,7 +3112,7 @@ func (c *ProjectsPolicyTestIamPermissionsCall) Do(opts ...googleapi.CallOption) 
 	return ret, nil
 	// {
 	//   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
-	//   "flatPath": "v1beta1/projects/{projectsId}/policy:testIamPermissions",
+	//   "flatPath": "v1/projects/{projectsId}/policy:testIamPermissions",
 	//   "httpMethod": "POST",
 	//   "id": "binaryauthorization.projects.policy.testIamPermissions",
 	//   "parameterOrder": [
@@ -3126,7 +3127,7 @@ func (c *ProjectsPolicyTestIamPermissionsCall) Do(opts ...googleapi.CallOption) 
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "v1beta1/{+resource}:testIamPermissions",
+	//   "path": "v1/{+resource}:testIamPermissions",
 	//   "request": {
 	//     "$ref": "TestIamPermissionsRequest"
 	//   },

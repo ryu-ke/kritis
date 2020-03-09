@@ -20,7 +20,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
   },
-  "id": "binaryauthorization:v1beta1",
+  "id": "binaryauthorization:v1",
   "kind": "discovery#restDescription",
   "mtlsRootUrl": "https://binaryauthorization.mtls.googleapis.com/",
   "name": "binaryauthorization",
@@ -109,7 +109,7 @@
       "methods": {
         "getPolicy": {
           "description": "A policy specifies the attestors that must attest to\na container image, before the project is allowed to deploy that\nimage. There is at most one policy per project. All image admission\nrequests are permitted if a project has no policy.\n\nGets the policy for this project. Returns a default\npolicy if the project does not have one.",
-          "flatPath": "v1beta1/projects/{projectsId}/policy",
+          "flatPath": "v1/projects/{projectsId}/policy",
           "httpMethod": "GET",
           "id": "binaryauthorization.projects.getPolicy",
           "parameterOrder": [
@@ -124,7 +124,7 @@
               "type": "string"
             }
           },
-          "path": "v1beta1/{+name}",
+          "path": "v1/{+name}",
           "response": {
             "$ref": "Policy"
           },
@@ -134,7 +134,7 @@
         },
         "updatePolicy": {
           "description": "Creates or updates a project's policy, and returns a copy of the\nnew policy. A policy is always updated as a whole, to avoid race\nconditions with concurrent policy enforcement (or management!)\nrequests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT\nif the request is malformed.",
-          "flatPath": "v1beta1/projects/{projectsId}/policy",
+          "flatPath": "v1/projects/{projectsId}/policy",
           "httpMethod": "PUT",
           "id": "binaryauthorization.projects.updatePolicy",
           "parameterOrder": [
@@ -149,7 +149,7 @@
               "type": "string"
             }
           },
-          "path": "v1beta1/{+name}",
+          "path": "v1/{+name}",
           "request": {
             "$ref": "Policy"
           },
@@ -166,7 +166,7 @@
           "methods": {
             "create": {
               "description": "Creates an attestor, and returns a copy of the new\nattestor. Returns NOT_FOUND if the project does not exist,\nINVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the\nattestor already exists.",
-              "flatPath": "v1beta1/projects/{projectsId}/attestors",
+              "flatPath": "v1/projects/{projectsId}/attestors",
               "httpMethod": "POST",
               "id": "binaryauthorization.projects.attestors.create",
               "parameterOrder": [
@@ -186,7 +186,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+parent}/attestors",
+              "path": "v1/{+parent}/attestors",
               "request": {
                 "$ref": "Attestor"
               },
@@ -199,7 +199,7 @@
             },
             "delete": {
               "description": "Deletes an attestor. Returns NOT_FOUND if the\nattestor does not exist.",
-              "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}",
+              "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}",
               "httpMethod": "DELETE",
               "id": "binaryauthorization.projects.attestors.delete",
               "parameterOrder": [
@@ -214,7 +214,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+name}",
+              "path": "v1/{+name}",
               "response": {
                 "$ref": "Empty"
               },
@@ -224,7 +224,7 @@
             },
             "get": {
               "description": "Gets an attestor.\nReturns NOT_FOUND if the attestor does not exist.",
-              "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}",
+              "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}",
               "httpMethod": "GET",
               "id": "binaryauthorization.projects.attestors.get",
               "parameterOrder": [
@@ -239,7 +239,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+name}",
+              "path": "v1/{+name}",
               "response": {
                 "$ref": "Attestor"
               },
@@ -249,7 +249,7 @@
             },
             "getIamPolicy": {
               "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
-              "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}:getIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}:getIamPolicy",
               "httpMethod": "GET",
               "id": "binaryauthorization.projects.attestors.getIamPolicy",
               "parameterOrder": [
@@ -270,7 +270,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+resource}:getIamPolicy",
+              "path": "v1/{+resource}:getIamPolicy",
               "response": {
                 "$ref": "IamPolicy"
               },
@@ -280,7 +280,7 @@
             },
             "list": {
               "description": "Lists attestors.\nReturns INVALID_ARGUMENT if the project does not exist.",
-              "flatPath": "v1beta1/projects/{projectsId}/attestors",
+              "flatPath": "v1/projects/{projectsId}/attestors",
               "httpMethod": "GET",
               "id": "binaryauthorization.projects.attestors.list",
               "parameterOrder": [
@@ -306,7 +306,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+parent}/attestors",
+              "path": "v1/{+parent}/attestors",
               "response": {
                 "$ref": "ListAttestorsResponse"
               },
@@ -316,7 +316,7 @@
             },
             "setIamPolicy": {
               "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED",
-              "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}:setIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}:setIamPolicy",
               "httpMethod": "POST",
               "id": "binaryauthorization.projects.attestors.setIamPolicy",
               "parameterOrder": [
@@ -331,7 +331,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+resource}:setIamPolicy",
+              "path": "v1/{+resource}:setIamPolicy",
               "request": {
                 "$ref": "SetIamPolicyRequest"
               },
@@ -344,7 +344,7 @@
             },
             "testIamPermissions": {
               "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
-              "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}:testIamPermissions",
+              "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}:testIamPermissions",
               "httpMethod": "POST",
               "id": "binaryauthorization.projects.attestors.testIamPermissions",
               "parameterOrder": [
@@ -359,7 +359,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+resource}:testIamPermissions",
+              "path": "v1/{+resource}:testIamPermissions",
               "request": {
                 "$ref": "TestIamPermissionsRequest"
               },
@@ -372,7 +372,7 @@
             },
             "update": {
               "description": "Updates an attestor.\nReturns NOT_FOUND if the attestor does not exist.",
-              "flatPath": "v1beta1/projects/{projectsId}/attestors/{attestorsId}",
+              "flatPath": "v1/projects/{projectsId}/attestors/{attestorsId}",
               "httpMethod": "PUT",
               "id": "binaryauthorization.projects.attestors.update",
               "parameterOrder": [
@@ -387,7 +387,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+name}",
+              "path": "v1/{+name}",
               "request": {
                 "$ref": "Attestor"
               },
@@ -404,7 +404,7 @@
           "methods": {
             "getIamPolicy": {
               "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
-              "flatPath": "v1beta1/projects/{projectsId}/policy:getIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/policy:getIamPolicy",
               "httpMethod": "GET",
               "id": "binaryauthorization.projects.policy.getIamPolicy",
               "parameterOrder": [
@@ -425,7 +425,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+resource}:getIamPolicy",
+              "path": "v1/{+resource}:getIamPolicy",
               "response": {
                 "$ref": "IamPolicy"
               },
@@ -435,7 +435,7 @@
             },
             "setIamPolicy": {
               "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED",
-              "flatPath": "v1beta1/projects/{projectsId}/policy:setIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/policy:setIamPolicy",
               "httpMethod": "POST",
               "id": "binaryauthorization.projects.policy.setIamPolicy",
               "parameterOrder": [
@@ -450,7 +450,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+resource}:setIamPolicy",
+              "path": "v1/{+resource}:setIamPolicy",
               "request": {
                 "$ref": "SetIamPolicyRequest"
               },
@@ -463,7 +463,7 @@
             },
             "testIamPermissions": {
               "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
-              "flatPath": "v1beta1/projects/{projectsId}/policy:testIamPermissions",
+              "flatPath": "v1/projects/{projectsId}/policy:testIamPermissions",
               "httpMethod": "POST",
               "id": "binaryauthorization.projects.policy.testIamPermissions",
               "parameterOrder": [
@@ -478,7 +478,7 @@
                   "type": "string"
                 }
               },
-              "path": "v1beta1/{+resource}:testIamPermissions",
+              "path": "v1/{+resource}:testIamPermissions",
               "request": {
                 "$ref": "TestIamPermissionsRequest"
               },
@@ -569,9 +569,9 @@
           "format": "google-datetime",
           "type": "string"
         },
-        "userOwnedDrydockNote": {
-          "$ref": "UserOwnedDrydockNote",
-          "description": "A Drydock ATTESTATION_AUTHORITY Note, created by the user."
+        "userOwnedGrafeasNote": {
+          "$ref": "UserOwnedGrafeasNote",
+          "description": "This specifies how an attestation will be read, and how it will be used\nduring policy enforcement."
         }
       },
       "type": "object"
@@ -826,16 +826,16 @@
       },
       "type": "object"
     },
-    "UserOwnedDrydockNote": {
-      "description": "An user owned drydock note references a Drydock\nATTESTATION_AUTHORITY Note created by the user.",
-      "id": "UserOwnedDrydockNote",
+    "UserOwnedGrafeasNote": {
+      "description": "An user owned Grafeas note references a Grafeas\nAttestation.Authority Note created by the user.",
+      "id": "UserOwnedGrafeasNote",
       "properties": {
         "delegationServiceAccountEmail": {
           "description": "Output only. This field will contain the service account email address\nthat this Attestor will use as the principal when querying Container\nAnalysis. Attestor administrators must grant this service account the\nIAM role needed to read attestations from the note_reference in\nContainer Analysis (`containeranalysis.notes.occurrences.viewer`).\n\nThis email address is fixed for the lifetime of the Attestor, but callers\nshould not make any other assumptions about the service account email;\nfuture versions may use an email based on a different naming pattern.",
           "type": "string"
         },
         "noteReference": {
-          "description": "Required. The Drydock resource name of a ATTESTATION_AUTHORITY Note,\ncreated by the user, in the format: `projects/*/notes/*` (or the legacy\n`providers/*/notes/*`). This field may not be updated.\n\nAn attestation by this attestor is stored as a Drydock\nATTESTATION_AUTHORITY Occurrence that names a container image and that\nlinks to this Note. Drydock is an external dependency.",
+          "description": "Required. The Grafeas resource name of a Attestation.Authority Note,\ncreated by the user, in the format: `projects/*/notes/*`. This field may\nnot be updated.\n\nAn attestation by this attestor is stored as a Grafeas\nAttestation.Authority Occurrence that names a container image and that\nlinks to this Note. Grafeas is an external dependency.",
           "type": "string"
         },
         "publicKeys": {
@@ -851,6 +851,6 @@
   },
   "servicePath": "",
   "title": "Binary Authorization API",
-  "version": "v1beta1",
+  "version": "v1",
   "version_module": true
 }
