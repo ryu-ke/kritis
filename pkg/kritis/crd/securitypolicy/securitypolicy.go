@@ -127,25 +127,18 @@ func ValidateImageSecurityPolicy(isp v1beta1.ImageSecurityPolicy, image string, 
 		})
 	}
 
-	// Check build occurrences
+	// Check image namespace against BuiltProjectIDs
+	// Previously this was checking against build.Provenance.ProjectID, but that is no longer available
 	glog.Infof("isp.Spec.BuiltProjectIDs = %v", isp.Spec.BuiltProjectIDs)
 	if len(isp.Spec.BuiltProjectIDs) > 0 {
-		builds, err := metadataFetcher.Builds(image)
-		if err != nil {
-			return nil, err
-		}
 		hasBuildProjectID := false
 		for _, projectID := range isp.Spec.BuiltProjectIDs {
-			for _, build := range builds {
-				if build.Provenance.ProjectID == projectID {
-					hasBuildProjectID = true
-					break
-				}
-			}
-			if hasBuildProjectID {
+			if imageInGCR(projectID, image) {
+				hasBuildProjectID = true
 				break
 			}
 		}
+
 		if !hasBuildProjectID {
 			violations = append(
 				violations,
@@ -154,7 +147,7 @@ func ValidateImageSecurityPolicy(isp v1beta1.ImageSecurityPolicy, image string, 
 					policy.BuildProjectIDViolation,
 					policy.Reason(
 						fmt.Sprintf(
-							"%q doesn't have build occurrence with required projectIDs: [%s]",
+							"%q doesn't come from a permitted GCR: [%s]",
 							image,
 							strings.Join(isp.Spec.BuiltProjectIDs, ","),
 						),
@@ -212,6 +205,24 @@ func imageInWhitelist(isp v1beta1.ImageSecurityPolicy, image string) bool {
 			return true
 		}
 	}
+	return false
+}
+
+func imageInGCR(projectID string, image string) bool {
+	prefixes := []string{
+		"gcr.io",
+		"asia.gcr.io",
+		"eu.gcr.io",
+		"us.gcr.io",
+	}
+
+	for _, p := range prefixes {
+		fullPrefix := fmt.Sprintf("%s/%s/", p, projectID)
+		if strings.HasPrefix(image, fullPrefix) {
+			return true
+		}
+	}
+
 	return false
 }
 
