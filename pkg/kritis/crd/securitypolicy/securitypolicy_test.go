@@ -219,9 +219,9 @@ func Test_OnlyFixesNotAvailablePassWithWhitelist(t *testing.T) {
 
 func Test_BuiltProjectIDs(t *testing.T) {
 	type subCase struct {
-		name            string
-		buildProvenance *metadata.BuildProvenance
-		hasViolation    bool
+		name         string
+		image        string
+		hasViolation bool
 	}
 
 	var cases = []struct {
@@ -231,46 +231,21 @@ func Test_BuiltProjectIDs(t *testing.T) {
 	}{
 		{
 			"ISP has 1 buildProjectIDs",
-			[]string{"kritis-p-1"},
+			[]string{"kritis-project"},
 			[]subCase{
 				{
 					"should have a build projectID violation",
-					nil,
+					"",
+					true,
+				},
+				{
+					"should have a build projectID violation 2",
+					"gcr.io/incorrect-project/abcd:123",
 					true,
 				},
 				{
 					"allowed with correct build projectID",
-					&metadata.BuildProvenance{
-						ProjectID: "kritis-p-1",
-						Creator:   "kritis-p-1@example.com",
-					},
-					false,
-				},
-			},
-		},
-		{
-			"ISP has 2 buildProjectIDs",
-			[]string{"kritis-p-1", "kritis-p-2"},
-			[]subCase{
-				{
-					"should have a build projectID violation",
-					nil,
-					true,
-				},
-				{
-					"allowed with correct build projectID (1)",
-					&metadata.BuildProvenance{
-						ProjectID: "kritis-p-1",
-						Creator:   "kritis-p-1@example.com",
-					},
-					false,
-				},
-				{
-					"allowed with correct build projectID (2)",
-					&metadata.BuildProvenance{
-						ProjectID: "kritis-p-2",
-						Creator:   "kritis-p-2@example.com",
-					},
+					goodImage,
 					false,
 				},
 			},
@@ -286,16 +261,11 @@ func Test_BuiltProjectIDs(t *testing.T) {
 			for _, sc := range c.subCases {
 				t.Run(sc.name, func(t *testing.T) {
 					builds := []metadata.Build{}
-					if sc.buildProvenance != nil {
-						builds = append(builds, metadata.Build{
-							Provenance: sc.buildProvenance,
-						})
-					}
 					mc := &testutil.MockMetadataClient{
 						Build: builds,
 					}
 					violations, err := ValidateImageSecurityPolicy(
-						isp, testutil.QualifiedImage, mc, returnNilAttestorFetcher{})
+						isp, sc.image, mc, returnNilAttestorFetcher{})
 					if err != nil {
 						t.Errorf("error validating isp: %v", err)
 					}
@@ -377,7 +347,7 @@ func Test_RequireAttestationsBy(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			isp := v1beta1.ImageSecurityPolicy{
 				Spec: v1beta1.ImageSecurityPolicySpec{
-					BuiltProjectIDs:       []string{"kritis-p-1"},
+					BuiltProjectIDs:       []string{"kritis-project"},
 					RequireAttestationsBy: []string{"projects/kritis-attestor-p-1/attestors/kritis-required-attestor-1"},
 				},
 			}
