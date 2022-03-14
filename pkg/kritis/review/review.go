@@ -19,6 +19,7 @@ package review
 import (
 	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
@@ -166,17 +167,19 @@ Please see instructions `, image)
 }
 
 func (r Reviewer) handleViolations(image string, pod *v1.Pod, violations []policy.Violation) error {
-	violationTypes := make([]string, len(violations))
+	violationSummaries := make([]string, len(violations))
 
 	for _, v := range violations {
-		violationTypes = append(violationTypes, fmt.Sprintf("%s", v.Type().ToString()))
+		violationSummaries = append(violationSummaries, fmt.Sprintf("%s: %s", v.Type().ToString(), v.Reason()))
 	}
 
-	errMsg := fmt.Sprintf("found violations in %q (%v)", image, violationTypes)
+	joinedSummaries := fmt.Sprintf("\n%s\n", strings.Join(violationSummaries, ",\n"))
+	errMsg := fmt.Sprintf("found violations in %q (%v)", image, joinedSummaries)
 
 	if err := r.config.Strategy.HandleViolation(image, pod, violations); err != nil {
 		return errors.Wrapf(err, "failed to handle violation: %s", errMsg)
 	}
+
 	return fmt.Errorf(errMsg)
 }
 
