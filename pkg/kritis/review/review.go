@@ -167,7 +167,7 @@ Please see instructions `, image)
 }
 
 func (r Reviewer) handleViolations(image string, pod *v1.Pod, violations []policy.Violation) error {
-	violationSummaries := make([]string, len(violations))
+	var violationSummaries []string
 
 	for _, v := range violations {
 		violationSummaries = append(violationSummaries, fmt.Sprintf("%s: %s", v.Type().ToString(), v.Reason()))
