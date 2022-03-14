@@ -166,13 +166,14 @@ Please see instructions `, image)
 }
 
 func (r Reviewer) handleViolations(image string, pod *v1.Pod, violations []policy.Violation) error {
-	errMsg := fmt.Sprintf("found violations in %q", image)
-	// Check if one of the violations is that the image is not fully qualified
+	violationTypes := make([]string, len(violations))
+
 	for _, v := range violations {
-		if v.Type() == policy.UnqualifiedImageViolation {
-			errMsg = fmt.Sprintf(`%q is not a fully qualified image. You can run 'kubectl plugin resolve-tags' to qualify all images with a digest. Instructions for installing the plugin can be found at https://github.com/grafeas/kritis/blob/master/cmd/kritis/kubectl/plugins/resolve`, image)
-		}
+		violationTypes = append(violationTypes, fmt.Sprintf("%s", v.Type().ToString()))
 	}
+
+	errMsg := fmt.Sprintf("found violations in %q (%v)", image, violationTypes)
+
 	if err := r.config.Strategy.HandleViolation(image, pod, violations); err != nil {
 		return errors.Wrapf(err, "failed to handle violation: %s", errMsg)
 	}
