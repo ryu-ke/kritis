@@ -32,6 +32,18 @@ const (
 	RequiredAttestationViolation
 )
 
+func (v ViolationType) ToString() string {
+	str := map[ViolationType]string{
+		UnqualifiedImageViolation:    "UnqualifiedImageViolation",
+		FixUnavailableViolation:      "FixUnavailableViolation",
+		SeverityViolation:            "SeverityViolation",
+		BuildProjectIDViolation:      "BuildProjectIDViolation",
+		RequiredAttestationViolation: "RequiredAttestationViolation",
+	}
+
+	return str[v]
+}
+
 // Violation represents a Policy Violation.
 type Violation interface {
 	Type() ViolationType
