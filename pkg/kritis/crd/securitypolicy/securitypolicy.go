@@ -324,3 +324,4 @@ func hasRequiredAttestation(image string, attestor *Attestor, attestations []met
 	}
 	return verified, nil
 }
+
