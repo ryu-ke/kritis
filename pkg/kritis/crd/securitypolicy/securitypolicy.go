@@ -245,8 +245,8 @@ func verifyArkSignature(ctx context.Context, occ *metadata.OccurenceV1) (*jwt.To
 			return nil, fmt.Errorf("token is not valid")
 		}
 
-		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		if token.Method.Alg() != jwt.SigningMethodRS256.Name {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Method.Alg())
 		}
 
 		return token, nil
