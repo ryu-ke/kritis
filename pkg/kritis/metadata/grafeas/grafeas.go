@@ -20,6 +20,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -166,6 +167,11 @@ func (c Client) Attestations(containerImage string) ([]metadata.PGPAttestation, 
 	return p, nil
 }
 
+// OccurencesV1 gets V1 Occurrences for a specified image.
+func (c Client) OccurencesV1(containerImage string) ([]*metadata.OccurenceV1, error) {
+	return nil, errors.New("not implemented")
+}
+
 // CreateAttestationNote creates an attestation note from AttestationAuthority
 func (c Client) CreateAttestationNote(aa *kritisv1beta1.AttestationAuthority) (*grafeas.Note, error) {
 	aaNote := &attestation.Authority{
@@ -190,7 +196,7 @@ func (c Client) CreateAttestationNote(aa *kritisv1beta1.AttestationAuthority) (*
 	return c.client.CreateNote(c.ctx, req)
 }
 
-//AttestationNote returns a note if it exists for given AttestationAuthority
+// AttestationNote returns a note if it exists for given AttestationAuthority
 func (c Client) AttestationNote(aa *kritisv1beta1.AttestationAuthority) (*grafeas.Note, error) {
 	req := &grafeas.GetNoteRequest{
 		Name: fmt.Sprintf("projects/%s/notes/%s", DefaultProject, aa.Name),

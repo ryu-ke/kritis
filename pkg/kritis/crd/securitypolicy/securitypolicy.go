@@ -18,6 +18,7 @@ package securitypolicy
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -125,6 +126,15 @@ func ValidateImageSecurityPolicy(isp v1beta1.ImageSecurityPolicy, image string, 
 			vType:         policy.SeverityViolation,
 			reason:        SeverityReason(image, v, isp),
 		})
+	}
+
+	// Check if image has ArkCI signature
+	occs, err := metadataFetcher.OccurencesV1(image)
+	for _, occ := range occs {
+		if strings.Contains(occ.NoteName, "arkci-signature") {
+			b, _ := json.Marshal(occ)
+			glog.Infof("ArkCI signature = %v", string(b))
+		}
 	}
 
 	// Check image namespace against BuiltProjectIDs

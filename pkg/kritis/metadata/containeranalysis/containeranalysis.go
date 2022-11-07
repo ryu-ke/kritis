@@ -29,6 +29,7 @@ import (
 	"github.com/grafeas/kritis/pkg/kritis/metadata"
 	"github.com/grafeas/kritis/pkg/kritis/secrets"
 	"github.com/grafeas/kritis/pkg/kritis/util"
+	cav1 "google.golang.org/api/containeranalysis/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/attestation"
 	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
@@ -42,8 +43,9 @@ const (
 
 // Client struct implements Fetcher Interface.
 type Client struct {
-	client *ca.GrafeasV1Beta1Client
-	ctx    context.Context
+	client   *ca.GrafeasV1Beta1Client
+	clientV1 *cav1.Service
+	ctx      context.Context
 }
 
 func New() (*Client, error) {
@@ -52,9 +54,14 @@ func New() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	clientV1, err := cav1.NewService(ctx)
+	if err != nil {
+		return nil, err
+	}
 	return &Client{
-		client: client,
-		ctx:    ctx,
+		client:   client,
+		clientV1: clientV1,
+		ctx:      ctx,
 	}, nil
 }
 
@@ -63,7 +70,7 @@ func (c Client) Close() {
 	c.client.Close()
 }
 
-//Vulnerabilities gets Package Vulnerabilities Occurrences for a specified image.
+// Vulnerabilities gets Package Vulnerabilities Occurrences for a specified image.
 func (c Client) Vulnerabilities(containerImage string) ([]metadata.Vulnerability, error) {
 	occs, err := c.fetchOccurrence(containerImage, PkgVulnerability)
 	if err != nil {
@@ -78,7 +85,7 @@ func (c Client) Vulnerabilities(containerImage string) ([]metadata.Vulnerability
 	return vulnz, nil
 }
 
-//Attestations gets AttesationAuthority Occurrences for a specified image.
+// Attestations gets AttesationAuthority Occurrences for a specified image.
 func (c Client) Attestations(containerImage string) ([]metadata.PGPAttestation, error) {
 	occs, err := c.fetchOccurrence(containerImage, AttestationAuthority)
 	if err != nil {
@@ -89,6 +96,19 @@ func (c Client) Attestations(containerImage string) ([]metadata.PGPAttestation, 
 		p[i] = util.GetPgpAttestationFromOccurrence(occ)
 	}
 	return p, nil
+}
+
+// OccurencesV1 gets V1 Occurrences for a specified image.
+func (c Client) OccurencesV1(containerImage string) ([]*metadata.OccurenceV1, error) {
+	resp, err := c.clientV1.Projects.Occurrences.
+		List(fmt.Sprintf("projects/%s", getProjectFromContainerImage(containerImage))).
+		Filter(fmt.Sprintf("resource_url=%q", util.GetResourceURL(containerImage))).
+		PageSize(int64(constants.PageSize)).Do()
+
+	if err != nil {
+		return nil, err
+	}
+	return resp.Occurrences, nil
 }
 
 func (c Client) fetchOccurrence(containerImage string, kind string) ([]*grafeas.Occurrence, error) {
@@ -172,7 +192,7 @@ func (c Client) CreateAttestationNote(aa *kritisv1beta1.AttestationAuthority) (*
 	return c.client.CreateNote(c.ctx, req)
 }
 
-//AttestationNote returns a note if it exists for given AttestationAuthority
+// AttestationNote returns a note if it exists for given AttestationAuthority
 func (c Client) AttestationNote(aa *kritisv1beta1.AttestationAuthority) (*grafeas.Note, error) {
 	noteProject, err := getProjectFromNoteReference(aa.Spec.NoteReference)
 	if err != nil {
