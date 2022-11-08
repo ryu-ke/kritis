@@ -142,10 +142,20 @@ func ValidateImageSecurityPolicy(isp v1beta1.ImageSecurityPolicy, image string, 
 
 			token, err := verifyArkSignature(context.Background(), occ)
 			if err != nil {
-				glog.Infof("Failed to verify ArkCI signature: %s", err)
+				violations = append(
+					violations,
+					NewViolation(
+						nil,
+						policy.ArkCISignatureViolation,
+						policy.Reason(
+							fmt.Sprintf("failed to verify ArkCI signature: %s", err),
+						),
+					),
+				)
 				continue
 			}
 
+			glog.Info("ArkCI signature verified")
 			if claims, ok := token.Claims.(jwt.MapClaims); ok {
 				signedProjectID, _ = claims["gcp_project"].(string)
 			}
@@ -236,17 +246,23 @@ func verifyArkSignature(ctx context.Context, occ *metadata.OccurenceV1) (*jwt.To
 	}
 
 	for _, j := range occ.Attestation.Jwts {
-		token, err := jwt.Parse(j.CompactJwt, keyFunc)
+		token, err := jwt.Parse(j.CompactJwt, func(token *jwt.Token) (interface{}, error) {
+			if token.Method.Alg() != jwt.SigningMethodRS256.Alg() {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Method.Alg())
+			}
+
+			// To bypass signing method check in gcpjwt
+			token.Method = gcpjwt.SigningMethodKMSRS256
+
+			return keyFunc(token)
+		})
+
 		if err != nil {
 			return nil, err
 		}
 
 		if !token.Valid {
 			return nil, fmt.Errorf("token is not valid")
-		}
-
-		if token.Method.Alg() != jwt.SigningMethodRS256.Name {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Method.Alg())
 		}
 
 		return token, nil

@@ -30,6 +30,7 @@ const (
 	SeverityViolation
 	BuildProjectIDViolation
 	RequiredAttestationViolation
+	ArkCISignatureViolation
 )
 
 func (v ViolationType) ToString() string {
@@ -39,6 +40,7 @@ func (v ViolationType) ToString() string {
 		SeverityViolation:            "SeverityViolation",
 		BuildProjectIDViolation:      "BuildProjectIDViolation",
 		RequiredAttestationViolation: "RequiredAttestationViolation",
+		ArkCISignatureViolation:      "ArkCISignatureViolation",
 	}
 
 	return str[v]
