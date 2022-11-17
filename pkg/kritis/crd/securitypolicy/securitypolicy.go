@@ -18,11 +18,15 @@ package securitypolicy
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
+	gcpjwt "github.com/someone1/gcp-jwt-go"
 	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/vulnerability"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
@@ -127,13 +131,48 @@ func ValidateImageSecurityPolicy(isp v1beta1.ImageSecurityPolicy, image string, 
 		})
 	}
 
+	// Check if image has ArkCI signature
+	arkciSignatureNote := os.Getenv("ARKCI_SIGNATURE_NOTE")
+	arkciSignerKeyPath := os.Getenv("ARKCI_KMS_SIGNER_KEY")
+
+	var signedProjectID string
+
+	occs, err := metadataFetcher.OccurencesV1(image)
+	for _, occ := range occs {
+		if occ.NoteName == arkciSignatureNote {
+			b, _ := json.Marshal(occ)
+			glog.Infof("ArkCI signature = %v", string(b))
+
+			token, err := verifyArkSignature(context.Background(), occ, arkciSignerKeyPath)
+			if err != nil {
+				violations = append(
+					violations,
+					NewViolation(
+						nil,
+						policy.ArkCISignatureViolation,
+						policy.Reason(
+							fmt.Sprintf("failed to verify ArkCI signature: %s", err),
+						),
+					),
+				)
+				continue
+			}
+
+			glog.Info("ArkCI signature verified")
+			if claims, ok := token.Claims.(jwt.MapClaims); ok {
+				signedProjectID, _ = claims["gcp_project"].(string)
+			}
+		}
+	}
+
 	// Check image namespace against BuiltProjectIDs
 	// Previously this was checking against build.Provenance.ProjectID, but that is no longer available
 	glog.Infof("isp.Spec.BuiltProjectIDs = %v", isp.Spec.BuiltProjectIDs)
 	if len(isp.Spec.BuiltProjectIDs) > 0 {
 		hasBuildProjectID := false
 		for _, projectID := range isp.Spec.BuiltProjectIDs {
-			if imageInGCR(projectID, image) {
+			// imageInGCR should be deprecated in the future, replaced by ArkCI signature
+			if projectID == signedProjectID || imageInGCR(projectID, image) {
 				hasBuildProjectID = true
 				break
 			}
@@ -197,6 +236,42 @@ func ValidateImageSecurityPolicy(isp v1beta1.ImageSecurityPolicy, image string, 
 	}
 
 	return violations, nil
+}
+
+func verifyArkSignature(ctx context.Context, occ *metadata.OccurenceV1, keyPath string) (*jwt.Token, error) {
+	config := &gcpjwt.KMSConfig{
+		KeyPath: keyPath,
+	}
+
+	keyFunc, err := gcpjwt.KMSVerfiyKeyfunc(ctx, config)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, j := range occ.Attestation.Jwts {
+		token, err := jwt.Parse(j.CompactJwt, func(token *jwt.Token) (interface{}, error) {
+			if token.Method.Alg() != jwt.SigningMethodRS256.Alg() {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Method.Alg())
+			}
+
+			// To bypass signing method check in gcpjwt
+			token.Method = gcpjwt.SigningMethodKMSRS256
+
+			return keyFunc(token)
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		if !token.Valid {
+			return nil, fmt.Errorf("token is not valid")
+		}
+
+		return token, nil
+	}
+
+	return nil, fmt.Errorf("no jwt found")
 }
 
 func imageInWhitelist(isp v1beta1.ImageSecurityPolicy, image string) bool {

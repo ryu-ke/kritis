@@ -67,6 +67,10 @@ func (m *MockMetadataClient) Attestations(containerImage string) ([]metadata.PGP
 	return m.PGPAttestations, nil
 }
 
+func (m *MockMetadataClient) OccurencesV1(containerImage string) ([]*metadata.OccurenceV1, error) {
+	return nil, nil
+}
+
 func (m *MockMetadataClient) Builds(containerImage string) ([]metadata.Build, error) {
 	return m.Build, nil
 }

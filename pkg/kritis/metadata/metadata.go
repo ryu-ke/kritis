@@ -19,6 +19,7 @@ package metadata
 import (
 	kritisv1beta1 "github.com/grafeas/kritis/pkg/kritis/apis/kritis/v1beta1"
 	"github.com/grafeas/kritis/pkg/kritis/secrets"
+	cav1 "google.golang.org/api/containeranalysis/v1"
 	grafeasv1beta1 "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 )
 
@@ -35,6 +36,8 @@ type Fetcher interface {
 	CreateAttestationNote(aa *kritisv1beta1.AttestationAuthority) (*grafeasv1beta1.Note, error)
 	//Attestations get Attestation Occurrences for given image.
 	Attestations(containerImage string) ([]PGPAttestation, error)
+	// OccurencesV1 gets V1 Occurrences for a specified image.
+	OccurencesV1(containerImage string) ([]*OccurenceV1, error)
 
 	// Builds get Build Occurrences for given image.
 	Builds(containerImage string) ([]Build, error)
@@ -66,3 +69,5 @@ type BuildProvenance struct {
 	ProjectID string
 	Creator   string
 }
+
+type OccurenceV1 = cav1.Occurrence

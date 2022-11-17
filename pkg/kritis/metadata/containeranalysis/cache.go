@@ -28,6 +28,7 @@ type Cache struct {
 	client metadata.Fetcher
 	vuln   map[string][]metadata.Vulnerability
 	att    map[string][]metadata.PGPAttestation
+	occ    map[string][]*metadata.OccurenceV1
 	build  map[string][]metadata.Build
 	notes  map[*kritisv1beta1.AttestationAuthority]*grafeas.Note
 }
@@ -42,6 +43,7 @@ func NewCache() (*Cache, error) {
 		client: c,
 		vuln:   map[string][]metadata.Vulnerability{},
 		att:    map[string][]metadata.PGPAttestation{},
+		occ:    map[string][]*metadata.OccurenceV1{},
 		notes:  map[*kritisv1beta1.AttestationAuthority]*grafeas.Note{},
 	}, nil
 }
@@ -73,6 +75,18 @@ func (c Cache) Attestations(image string) ([]metadata.PGPAttestation, error) {
 		c.att[image] = a
 	}
 	return a, err
+}
+
+// OccurencesV1 gets V1 Occurrences for a specified image.
+func (c Cache) OccurencesV1(image string) ([]*metadata.OccurenceV1, error) {
+	if o, ok := c.occ[image]; ok {
+		return o, nil
+	}
+	o, err := c.client.OccurencesV1(image)
+	if err != nil {
+		c.occ[image] = o
+	}
+	return o, err
 }
 
 // CreateAttestationNote creates an attestation note from AttestationAuthority
