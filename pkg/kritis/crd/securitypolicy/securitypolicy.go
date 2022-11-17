@@ -132,15 +132,18 @@ func ValidateImageSecurityPolicy(isp v1beta1.ImageSecurityPolicy, image string, 
 	}
 
 	// Check if image has ArkCI signature
+	arkciSignatureNote := os.Getenv("ARKCI_SIGNATURE_NOTE")
+	arkciSignerKeyPath := os.Getenv("ARKCI_KMS_SIGNER_KEY")
+
 	var signedProjectID string
 
 	occs, err := metadataFetcher.OccurencesV1(image)
 	for _, occ := range occs {
-		if occ.NoteName == os.Getenv("ARKCI_SIGNATURE_NOTE") {
+		if occ.NoteName == arkciSignatureNote {
 			b, _ := json.Marshal(occ)
 			glog.Infof("ArkCI signature = %v", string(b))
 
-			token, err := verifyArkSignature(context.Background(), occ)
+			token, err := verifyArkSignature(context.Background(), occ, arkciSignerKeyPath)
 			if err != nil {
 				violations = append(
 					violations,
@@ -235,9 +238,9 @@ func ValidateImageSecurityPolicy(isp v1beta1.ImageSecurityPolicy, image string, 
 	return violations, nil
 }
 
-func verifyArkSignature(ctx context.Context, occ *metadata.OccurenceV1) (*jwt.Token, error) {
+func verifyArkSignature(ctx context.Context, occ *metadata.OccurenceV1, keyPath string) (*jwt.Token, error) {
 	config := &gcpjwt.KMSConfig{
-		KeyPath: os.Getenv("ARKCI_KMS_SIGNER_KEY"),
+		KeyPath: keyPath,
 	}
 
 	keyFunc, err := gcpjwt.KMSVerfiyKeyfunc(ctx, config)
